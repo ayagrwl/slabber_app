@@ -17,13 +17,12 @@ class G {
       socketUtils = SocketUtils();
     }
   }
-
+    
   static void initDummyUsers() {
-    User userA = new User(id: 1000, name: 'A', email: 'testa@gmail.com');
-    User userB = new User(id: 1001, name: 'B', email: 'testb@gmail.com');
+    // User userA = new User(id: 1000, name: 'A', email: 'testa@gmail.com');
     dummyUsers = List<User>();
-    dummyUsers.add(userA);
-    dummyUsers.add(userB);
+    // dummyUsers.add(userA);
+    
   }
 
   static List<User> getUsersFor(User user) {

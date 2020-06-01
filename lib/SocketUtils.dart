@@ -6,9 +6,10 @@ import 'package:adhara_socket_io/adhara_socket_io.dart';
 class SocketUtils {
   //
   //static String _serverIP = Platform.isIOS ? 'http://localhost' : 'http://10.0.2.2';
-  static String _serverIP = Platform.isIOS ? 'http://localhost' : 'http://10.0.2.2'; 
-  static const int SERVER_PORT = 4002;
-  static String _connectUrl = '$_serverIP:$SERVER_PORT';
+  //static String _serverIP = Platform.isIOS ? 'http://localhost' : 'http://10.0.2.2'; 
+  //static const int SERVER_PORT = 4002;
+  static String _serverIP = 'https://chateng.herokuapp.com';
+  static String _connectUrl = 'https://chateng.herokuapp.com';
 
   // Events
   static const String ON_MESSAGE_RECEIVED = 'receive_message';

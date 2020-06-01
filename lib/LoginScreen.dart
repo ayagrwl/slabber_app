@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'ChatUsersScreen.dart';
 import 'Global.dart';
 import 'User.dart';
+//import 'dart:math';
 
 class LoginScreen extends StatefulWidget {
   //
@@ -16,11 +17,15 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   //
   TextEditingController _usernameController;
+  TextEditingController _useridController;
+  TextEditingController _useremailController;
 
   @override
   void initState() {
     super.initState();
+    _useridController = TextEditingController();
     _usernameController = TextEditingController();
+    _useremailController = TextEditingController();
     G.initDummyUsers();
   }
 
@@ -28,7 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Let's Chat"),
+        title: Text("Slabber"),
       ),
       body: Container(
         alignment: Alignment.center,
@@ -37,7 +42,35 @@ class _LoginScreenState extends State<LoginScreen> {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             TextField(
+              controller: _useridController,
+              textAlign: TextAlign.center,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(5.0),
+                  ),
+                ),
+                filled: true,
+                fillColor: Colors.white,
+                contentPadding: EdgeInsets.all(20.0),
+              ),
+            ),
+            TextField(
               controller: _usernameController,
+              textAlign: TextAlign.center,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(5.0),
+                  ),
+                ),
+                filled: true,
+                fillColor: Colors.white,
+                contentPadding: EdgeInsets.all(20.0),
+              ),
+            ),
+            TextField(
+              controller: _useremailController,
               textAlign: TextAlign.center,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
@@ -65,14 +98,17 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   _loginBtnTap() async {
-    if (_usernameController.text.isEmpty) {
+    if (_usernameController.text.isEmpty || _useremailController.text.isEmpty || _useridController.text.isEmpty) {
       return;
     }
+    
+    User me = User(
+      id: int.parse(_useridController.text),
+      name: _usernameController.text,
+      email: _useremailController.text,
+    );
 
-    User me = G.dummyUsers[0];
-    if (_usernameController.text != 'a') {
-      me = G.dummyUsers[1];
-    }
+    G.dummyUsers.add(me);
 
     G.loggedInUser = me;
 
