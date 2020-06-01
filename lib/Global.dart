@@ -19,10 +19,15 @@ class G {
   }
     
   static void initDummyUsers() {
-    // User userA = new User(id: 1000, name: 'A', email: 'testa@gmail.com');
+    User harshOnePlus = new User(id: 1, name: 'Harsh 1+', email: '1@gmail.com');
+    User harshMoto = new User(id: 2, name: 'Harsh moto', email: '2@gmail.com');
+    User ayushEmul = new User(id: 3, name: 'Ayush emul', email: '3@gmail.com');
+    User ayushPhone = new User(id: 4, name: 'Ayush phone', email: '4@gmail.com');
     dummyUsers = List<User>();
-    // dummyUsers.add(userA);
-    
+    dummyUsers.add(harshOnePlus);
+    dummyUsers.add(harshMoto);
+    dummyUsers.add(ayushEmul);
+    dummyUsers.add(ayushPhone);
   }
 
   static List<User> getUsersFor(User user) {

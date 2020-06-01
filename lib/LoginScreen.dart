@@ -17,15 +17,15 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   //
   TextEditingController _usernameController;
-  TextEditingController _useridController;
-  TextEditingController _useremailController;
+  //TextEditingController _useridController;
+  //TextEditingController _useremailController;
 
   @override
   void initState() {
     super.initState();
-    _useridController = TextEditingController();
+    //_useridController = TextEditingController();
     _usernameController = TextEditingController();
-    _useremailController = TextEditingController();
+    //_useremailController = TextEditingController();
     G.initDummyUsers();
   }
 
@@ -41,7 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            TextField(
+            /*TextField(
               controller: _useridController,
               textAlign: TextAlign.center,
               decoration: InputDecoration(
@@ -54,7 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 fillColor: Colors.white,
                 contentPadding: EdgeInsets.all(20.0),
               ),
-            ),
+            ),*/
             TextField(
               controller: _usernameController,
               textAlign: TextAlign.center,
@@ -64,12 +64,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     Radius.circular(5.0),
                   ),
                 ),
+                labelText: "username",
                 filled: true,
                 fillColor: Colors.white,
                 contentPadding: EdgeInsets.all(20.0),
               ),
             ),
-            TextField(
+            /*TextField(
               controller: _useremailController,
               textAlign: TextAlign.center,
               decoration: InputDecoration(
@@ -82,7 +83,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 fillColor: Colors.white,
                 contentPadding: EdgeInsets.all(20.0),
               ),
-            ),
+            ),*/
             SizedBox(
               height: 20.0,
             ),
@@ -98,20 +99,21 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   _loginBtnTap() async {
-    if (_usernameController.text.isEmpty || _useremailController.text.isEmpty || _useridController.text.isEmpty) {
+    if (_usernameController.text.isEmpty) {
       return;
     }
     
-    User me = User(
-      id: int.parse(_useridController.text),
-      name: _usernameController.text,
-      email: _useremailController.text,
-    );
-
-    G.dummyUsers.add(me);
-
+    User me;
+    if(_usernameController.text.startsWith('o')){
+      me = G.dummyUsers[0];
+    } else if(_usernameController.text.startsWith('m')){
+      me = G.dummyUsers[1];
+    } else if(_usernameController.text.startsWith('a')){
+      me = G.dummyUsers[2];
+    } else if (_usernameController.text.startsWith('p')) {
+      me = G.dummyUsers[3];
+    }
     G.loggedInUser = me;
-
     openHomeScreen(context);
   }
 
