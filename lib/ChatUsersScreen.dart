@@ -5,7 +5,6 @@ import 'Global.dart';
 import 'User.dart';
 
 class ChatUsersScreen extends StatefulWidget {
-  //
   ChatUsersScreen() : super();
 
   static const String ROUTE_ID = 'chat_users_list_screen';
@@ -15,7 +14,7 @@ class ChatUsersScreen extends StatefulWidget {
 }
 
 class _ChatUsersScreenState extends State<ChatUsersScreen> {
-  //
+  
   List<User> _chatUsers;
   bool _connectedToSocket;
   String _errorConnectMessage;

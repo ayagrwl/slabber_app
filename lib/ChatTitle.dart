@@ -16,17 +16,36 @@ class ChatTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      alignment: Alignment.center,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+      child: Row(
         children: <Widget>[
-          Text(chatUser.name),
-          Text(
-            _getStatusText(),
-            style: TextStyle(
-              fontSize: 14.0,
-              color: Colors.white70,
-            ),
+          CircleAvatar(
+            backgroundImage: AssetImage("assets/images/contact.png"),
+            backgroundColor: Colors.black,
+            radius: 20.0,
+          ),
+          SizedBox (
+            width: 20.0,
+          ),
+          Column (
+            children: <Widget>[
+              SizedBox(height: 3.0),
+              Text(
+                chatUser.name,
+                style: TextStyle(
+                  color:Theme.of(context).hintColor,//Colors.white,
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 3.0,),
+              Text (
+                _getStatusText(),
+                style: TextStyle(
+                  fontSize: 15.0,
+                  color: Theme.of(context).disabledColor,//Colors.white70,
+                ),
+              )
+            ],
           )
         ],
       ),
@@ -45,3 +64,15 @@ class ChatTitle extends StatelessWidget {
     }
   }
 }
+
+
+/*children: <Widget>[
+          Text(chatUser.name),
+          Text(
+            _getStatusText(),
+            style: TextStyle(
+              fontSize: 14.0,
+              color: Colors.white70,
+            ),
+          )
+        ],*/

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:trial_app/HomeScreen.dart';
 import 'ChatUsersScreen.dart';
 import 'Global.dart';
 import 'User.dart';
@@ -120,7 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
   static openHomeScreen(BuildContext context) async {
     await Navigator.pushReplacementNamed(
       context,
-      ChatUsersScreen.ROUTE_ID,
+      HomeScreen.ROUTE_ID,
     );
   }
 }

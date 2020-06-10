@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'ChatBubble.dart';
 import 'ChatMessageModel.dart';
 import 'Global.dart';
 import 'SocketUtils.dart';
@@ -9,19 +8,14 @@ import 'ChatTitle.dart';
 import 'User.dart';
 
 class ChatScreen extends StatefulWidget {
-  //
   ChatScreen() : super();
-
   final String title = "Chat Screen";
-
   static const String ROUTE_ID = 'chat_screen';
-
   @override
   ChatScreenState createState() => ChatScreenState();
 }
 
 class ChatScreenState extends State<ChatScreen> {
-  //
   TextEditingController _chatTfController;
   List<ChatMessageModel> _chatMessages;
   User _chatUser;
@@ -57,24 +51,44 @@ class ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).primaryColor,
       appBar: AppBar(
+        elevation: 0.0,
         title: ChatTitle(
           chatUser: G.toChatUser,
           userOnlineStatus: _userOnlineStatus,
         ),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.more_vert),
+            iconSize: 30.0,
+            color: Theme.of(context).buttonColor,//Colors.white,
+            onPressed: () {},
+          ),
+        ],
       ),
-      body: SafeArea(
+      body: GestureDetector(
+        onTap: () => Focus.of(context).unfocus(),
         child: Container(
-          color: Colors.white,
-          padding: const EdgeInsets.all(10.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: <Widget>[
-              _chatList(),
-              _bottomChatArea(),
-            ],
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(30.0),
+                topRight: Radius.circular(30.0),
+              )),
+          child: ClipRRect(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(30.0),
+              topRight: Radius.circular(30.0),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                _chatList(),
+                _bottomChatArea(),
+              ],
+            ),
           ),
         ),
       ),
@@ -84,12 +98,13 @@ class ChatScreenState extends State<ChatScreen> {
   _chatList() {
     return Expanded(
       child: Container(
+        color: Theme.of(context).canvasColor,
         child: ListView.builder(
           cacheExtent: 100,
           controller: _chatLVController,
           reverse: false,
           shrinkWrap: true,
-          padding: EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
+          //padding: EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
           itemCount: null == _chatMessages ? 0 : _chatMessages.length,
           itemBuilder: (context, index) {
             ChatMessageModel chatMessage = _chatMessages[index];
@@ -104,12 +119,22 @@ class ChatScreenState extends State<ChatScreen> {
 
   _bottomChatArea() {
     return Container(
-      padding: EdgeInsets.all(10.0),
+      padding: EdgeInsets.symmetric(horizontal: 8.0),
+      height: 70.0,
+      color: Theme.of(context).backgroundColor,
       child: Row(
         children: <Widget>[
+          IconButton(
+            icon: Icon(Icons.photo),
+            iconSize: 25.0,
+            color: Theme.of(context).buttonColor,
+            onPressed: () {},
+          ),
           _chatTextArea(),
           IconButton(
             icon: Icon(Icons.send),
+            iconSize: 25.0,
+            color: Theme.of(context).buttonColor,
             onPressed: () async {
               _sendButtonTap();
             },
@@ -122,26 +147,10 @@ class ChatScreenState extends State<ChatScreen> {
   _chatTextArea() {
     return Expanded(
       child: TextField(
+        textCapitalization: TextCapitalization.sentences,
         controller: _chatTfController,
-        decoration: InputDecoration(
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10.0),
-            borderSide: BorderSide(
-              color: Colors.grey,
-              width: 0.0,
-            ),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10.0),
-            borderSide: BorderSide(
-              color: Colors.white,
-              width: 0.0,
-            ),
-          ),
-          filled: true,
-          fillColor: Colors.white,
-          contentPadding: EdgeInsets.all(10.0),
-          hintText: 'Type message...',
+        decoration: InputDecoration.collapsed(
+          hintText: 'Send a message...',
         ),
       ),
     );
@@ -181,52 +190,42 @@ class ChatScreenState extends State<ChatScreen> {
 
   _chatBubble(ChatMessageModel chatMessageModel) {
     bool fromMe = chatMessageModel.from == G.loggedInUser.id;
-    Alignment alignment = fromMe ? Alignment.topRight : Alignment.topLeft;
-    Alignment chatArrowAlignment =
-        fromMe ? Alignment.topRight : Alignment.topLeft;
-    TextStyle textStyle = TextStyle(
-      fontSize: 16.0,
-      color: fromMe ? Colors.white : Colors.black54,
-    );
-    Color chatBgColor = fromMe ? Colors.blue : Colors.black12;
-    EdgeInsets edgeInsets = fromMe
-        ? EdgeInsets.fromLTRB(5, 5, 15, 5)
-        : EdgeInsets.fromLTRB(15, 5, 5, 5);
-    EdgeInsets margins = fromMe
-        ? EdgeInsets.fromLTRB(80, 5, 10, 5)
-        : EdgeInsets.fromLTRB(10, 5, 80, 5);
-
-    return Container(
-      color: Colors.white,
-      margin: margins,
+    final Container msg = Container(
+      margin: fromMe
+          ? EdgeInsets.only(top: 8.0, bottom: 8.0, left: 120.0)
+          : EdgeInsets.only(top: 8.0, bottom: 8.0, right: 120.0),
+      padding: EdgeInsets.symmetric(horizontal: 25.0, vertical: 15.0),
+      width: MediaQuery.of(context).size.width * 0.60,
+      decoration: fromMe
+        ? BoxDecoration(
+            color: Theme.of(context).buttonColor,
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(15.0),
+                bottomLeft: Radius.circular(15.0)),
+          )
+        : BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.only(
+                topRight: Radius.circular(15.0),
+                bottomRight: Radius.circular(15.0)),
+          ),
       child: Align(
-        alignment: alignment,
+        alignment: fromMe ? Alignment.topRight : Alignment.topLeft,
         child: Column(
           children: <Widget>[
-            CustomPaint(
-              painter: ChatBubble(
-                color: chatBgColor,
-                alignment: chatArrowAlignment,
-              ),
-              child: Container(
-                margin: EdgeInsets.all(10),
-                child: Stack(
-                  children: <Widget>[
-                    Padding(
-                      padding: edgeInsets,
-                      child: Text(
-                        chatMessageModel.message,
-                        style: textStyle,
-                      ),
-                    ),
-                  ],
-                ),
+            Text(
+              chatMessageModel.message,
+              style: TextStyle(
+                color: Theme.of(context).hintColor,
+                fontSize: 16.0,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ],
         ),
       ),
     );
+    return msg;
   }
 
   onChatMessageReceived(data) {
@@ -290,3 +289,50 @@ class ChatScreenState extends State<ChatScreen> {
 }
 
 enum UserOnlineStatus { connecting, online, not_online }
+
+/* Alignment alignment = fromMe ? Alignment.topRight : Alignment.topLeft;
+    Alignment chatArrowAlignment =
+        fromMe ? Alignment.topRight : Alignment.topLeft;
+    TextStyle textStyle = TextStyle(
+      fontSize: 16.0,
+      color: fromMe ? Colors.white : Colors.black54,
+    );
+    Color chatBgColor = fromMe ? Colors.blue : Colors.black12;
+    EdgeInsets edgeInsets = fromMe
+        ? EdgeInsets.fromLTRB(5, 5, 15, 5)
+        : EdgeInsets.fromLTRB(15, 5, 5, 5);
+    EdgeInsets margins = fromMe
+        ? EdgeInsets.fromLTRB(80, 5, 10, 5)
+        : EdgeInsets.fromLTRB(10, 5, 80, 5);
+
+    return Container(
+      color: Colors.white,
+      margin: margins,
+      child: Align(
+        alignment: alignment,
+        child: Column(
+          children: <Widget>[
+            CustomPaint(
+              painter: ChatBubble(
+                color: chatBgColor,
+                alignment: chatArrowAlignment,
+              ),
+              child: Container(
+                margin: EdgeInsets.all(10),
+                child: Stack(
+                  children: <Widget>[
+                    Padding(
+                      padding: edgeInsets,
+                      child: Text(
+                        chatMessageModel.message,
+                        style: textStyle,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );*/
