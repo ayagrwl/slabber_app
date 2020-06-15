@@ -171,6 +171,10 @@ class DbUtils {
     Database db = await instance.database;
     return await db.query(table);
   }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 3f0c0bbd671f5079dad1869b2af4e10c92adf291
   // All of the methods (insert, query, update, delete) can also be done using
   // raw SQL commands. This method uses a raw query to give the row count.
   Future<int> queryRowCount() async {
@@ -178,6 +182,10 @@ class DbUtils {
     return Sqflite.firstIntValue(
         await db.rawQuery('SELECT COUNT(*) FROM $table'));
   }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 3f0c0bbd671f5079dad1869b2af4e10c92adf291
   // We are assuming here that the id column in the map is set. The other
   // column values will be used to update the row.
   Future<int> update(Map<String, dynamic> row) async {
@@ -185,6 +193,10 @@ class DbUtils {
     int id = row[columnId];
     return await db.update(table, row, where: '$columnId = ?', whereArgs: [id]);
   }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 3f0c0bbd671f5079dad1869b2af4e10c92adf291
   // Deletes the row specified by the id. The number of affected rows is
   // returned. This should be 1 as long as the row exists.
   Future<int> delete(int id) async {
@@ -192,4 +204,8 @@ class DbUtils {
     return await db.delete(table, where: '$columnId = ?', whereArgs: [id]);
   }
 }
+<<<<<<< HEAD
 */
+=======
+*/
+>>>>>>> 3f0c0bbd671f5079dad1869b2af4e10c92adf291
