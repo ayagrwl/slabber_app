@@ -32,7 +32,7 @@ class ChatTitle extends StatelessWidget {
               Text(
                 chatUser.name,
                 style: TextStyle(
-                  color:Theme.of(context).hintColor,//Colors.white,
+                  color:Theme.of(context).splashColor,//Colors.white,
                   fontSize: 20.0,
                   fontWeight: FontWeight.bold,
                 ),
@@ -42,7 +42,7 @@ class ChatTitle extends StatelessWidget {
                 _getStatusText(),
                 style: TextStyle(
                   fontSize: 15.0,
-                  color: Theme.of(context).disabledColor,//Colors.white70,
+                  color: Theme.of(context).textSelectionColor,//Colors.white70,
                 ),
               )
             ],
@@ -64,15 +64,3 @@ class ChatTitle extends StatelessWidget {
     }
   }
 }
-
-
-/*children: <Widget>[
-          Text(chatUser.name),
-          Text(
-            _getStatusText(),
-            style: TextStyle(
-              fontSize: 14.0,
-              color: Colors.white70,
-            ),
-          )
-        ],*/

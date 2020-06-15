@@ -1,9 +1,14 @@
 import 'dart:async';
+import 'package:emoji_picker/emoji_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:gradient_app_bar/gradient_app_bar.dart';
+import 'package:provider/provider.dart';
+import 'package:trial_app/theme.dart';
+import 'package:trial_app/theme_model.dart';
 import 'ChatMessageModel.dart';
 import 'Global.dart';
 import 'SocketUtils.dart';
-
 import 'ChatTitle.dart';
 import 'User.dart';
 
@@ -21,6 +26,7 @@ class ChatScreenState extends State<ChatScreen> {
   User _chatUser;
   ScrollController _chatLVController;
   UserOnlineStatus _userOnlineStatus;
+  bool isShowSticker;
 
   @override
   void initState() {
@@ -32,6 +38,29 @@ class ChatScreenState extends State<ChatScreen> {
     _chatMessages = List();
     _initSocketListeners();
     _checkOnline();
+    isShowSticker = false;
+  }
+
+  Future<bool> _onWillPop() async {
+    if(isShowSticker){
+      setState(() {
+        isShowSticker = false;
+      });
+    } else {
+      Navigator.pop(context);
+    }
+    return Future.value(false);
+  }
+
+  Future<bool> onBackPress() {
+    if (isShowSticker) {
+      setState(() {
+        isShowSticker = false;
+      });
+    } else {
+      Navigator.pop(context);
+    }
+    return Future.value(false);
   }
 
   _initSocketListeners() async {
@@ -48,48 +77,80 @@ class ChatScreenState extends State<ChatScreen> {
     G.socketUtils.checkOnline(chatMessageModel);
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).primaryColor,
-      appBar: AppBar(
-        elevation: 0.0,
+  _createAppBar() {
+    if (Provider.of<ThemeModel>(context).currentTheme == darkTheme) {
+      return AppBar(
+        elevation: 5.0,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: Theme.of(context).buttonColor,
+          ),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         title: ChatTitle(
           chatUser: G.toChatUser,
           userOnlineStatus: _userOnlineStatus,
         ),
         actions: <Widget>[
           IconButton(
+            padding: EdgeInsets.only(right: 15.0),
             icon: Icon(Icons.more_vert),
             iconSize: 30.0,
-            color: Theme.of(context).buttonColor,//Colors.white,
+            color: Theme.of(context).buttonColor,
             onPressed: () {},
           ),
         ],
-      ),
-      body: GestureDetector(
-        onTap: () => Focus.of(context).unfocus(),
-        child: Container(
-          decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(30.0),
-                topRight: Radius.circular(30.0),
-              )),
-          child: ClipRRect(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(30.0),
-              topRight: Radius.circular(30.0),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: <Widget>[
-                _chatList(),
-                _bottomChatArea(),
-              ],
-            ),
+      );
+    } else {
+      return GradientAppBar(
+        backgroundColorStart: Theme.of(context).hoverColor,
+        backgroundColorEnd: Theme.of(context).appBarTheme.color,
+        elevation: 5.0,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: Theme.of(context).buttonColor,
           ),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: ChatTitle(
+          chatUser: G.toChatUser,
+          userOnlineStatus: _userOnlineStatus,
+        ),
+        actions: <Widget>[
+          IconButton(
+            padding: EdgeInsets.only(right: 15.0),
+            icon: Icon(Icons.more_vert),
+            iconSize: 30.0,
+            color: Theme.of(context).buttonColor,
+            onPressed: () {},
+          ),
+        ],
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: _createAppBar(),
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: <Widget>[
+            _chatList(),
+            _bottomChatArea(),
+            isShowSticker
+                ? buildSticker()
+                : Container(
+                    child: Text(""),
+                  ),
+          ],
         ),
       ),
     );
@@ -97,38 +158,43 @@ class ChatScreenState extends State<ChatScreen> {
 
   _chatList() {
     return Expanded(
-      child: Container(
-        color: Theme.of(context).canvasColor,
-        child: ListView.builder(
-          cacheExtent: 100,
-          controller: _chatLVController,
-          reverse: false,
-          shrinkWrap: true,
-          //padding: EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
-          itemCount: null == _chatMessages ? 0 : _chatMessages.length,
-          itemBuilder: (context, index) {
-            ChatMessageModel chatMessage = _chatMessages[index];
-            return _chatBubble(
-              chatMessage,
-            );
-          },
-        ),
+      child: ListView.builder(
+        cacheExtent: 100,
+        controller: _chatLVController,
+        reverse: false,
+        shrinkWrap: true,
+        itemCount: null == _chatMessages ? 0 : _chatMessages.length,
+        itemBuilder: (context, index) {
+          ChatMessageModel chatMessage = _chatMessages[index];
+          return _chatBubble(
+            chatMessage,
+          );
+        },
       ),
     );
   }
 
   _bottomChatArea() {
     return Container(
+      margin: EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
+      decoration: BoxDecoration(
+        color: Theme.of(context).appBarTheme.color,
+        borderRadius: BorderRadius.all(Radius.circular(40.0)),
+      ),
       padding: EdgeInsets.symmetric(horizontal: 8.0),
-      height: 70.0,
-      color: Theme.of(context).backgroundColor,
+      height: 50.0,
       child: Row(
         children: <Widget>[
           IconButton(
-            icon: Icon(Icons.photo),
+            icon: Icon(Icons.insert_emoticon),
             iconSize: 25.0,
             color: Theme.of(context).buttonColor,
-            onPressed: () {},
+            onPressed: () {
+              setState(() {
+                isShowSticker = !isShowSticker;
+                FocusScope.of(context).unfocus();
+              });
+            },
           ),
           _chatTextArea(),
           IconButton(
@@ -147,11 +213,47 @@ class ChatScreenState extends State<ChatScreen> {
   _chatTextArea() {
     return Expanded(
       child: TextField(
+        onTap: () => isShowSticker = false,
         textCapitalization: TextCapitalization.sentences,
         controller: _chatTfController,
+        cursorColor: Colors.white,
+        enableInteractiveSelection: true,
+        enableSuggestions: true,
+        keyboardAppearance: Brightness.dark,
+        minLines: 1,
+        maxLines: 2,
+        autocorrect: true,
         decoration: InputDecoration.collapsed(
-          hintText: 'Send a message...',
+          hintText: 'Type message here ...',
+          hintStyle: TextStyle(
+            color: Theme.of(context).hintColor,
+          ),
         ),
+        style: TextStyle(color: Colors.white),
+      ),
+    );
+  }
+
+  Widget buildSticker() {
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: EmojiPicker(
+        rows: 4,
+        columns: 10,
+        buttonMode: ButtonMode.MATERIAL,
+        onEmojiSelected: (emoji, category) {
+          setState(() {
+            TextSelection textSelection = _chatTfController.selection;
+            _chatTfController.text += emoji.emoji;
+            final emojiLength = emoji.emoji.length;
+            _chatTfController.selection = textSelection.copyWith(
+              baseOffset: textSelection.start + emojiLength,
+              extentOffset: textSelection.start + emojiLength
+            );
+          });
+        },
+        bgColor: Theme.of(context).scaffoldBackgroundColor,
+        indicatorColor: Theme.of(context).indicatorColor,
       ),
     );
   }
@@ -178,6 +280,7 @@ class ChatScreenState extends State<ChatScreen> {
     _addMessage(0, chatMessageModel, _isFromMe(G.loggedInUser));
     _clearMessage();
     G.socketUtils.sendSingleChatMessage(chatMessageModel, _chatUser);
+    FocusScope.of(context).unfocus();
   }
 
   _clearMessage() {
@@ -194,21 +297,22 @@ class ChatScreenState extends State<ChatScreen> {
       margin: fromMe
           ? EdgeInsets.only(top: 8.0, bottom: 8.0, left: 120.0)
           : EdgeInsets.only(top: 8.0, bottom: 8.0, right: 120.0),
-      padding: EdgeInsets.symmetric(horizontal: 25.0, vertical: 15.0),
+      padding: EdgeInsets.symmetric(horizontal: 25.0, vertical: 10.0),
       width: MediaQuery.of(context).size.width * 0.60,
       decoration: fromMe
-        ? BoxDecoration(
-            color: Theme.of(context).buttonColor,
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(15.0),
-                bottomLeft: Radius.circular(15.0)),
-          )
-        : BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.only(
-                topRight: Radius.circular(15.0),
-                bottomRight: Radius.circular(15.0)),
-          ),
+          ? BoxDecoration(
+              color: /*Theme.of(context).primaryColorLight,*/ Theme.of(context)
+                  .primaryColor,
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20.0),
+                  bottomLeft: Radius.circular(20.0)),
+            )
+          : BoxDecoration(
+              color: Theme.of(context).primaryColorLight,
+              borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(20.0),
+                  bottomRight: Radius.circular(20.0)),
+            ),
       child: Align(
         alignment: fromMe ? Alignment.topRight : Alignment.topLeft,
         child: Column(
@@ -216,7 +320,9 @@ class ChatScreenState extends State<ChatScreen> {
             Text(
               chatMessageModel.message,
               style: TextStyle(
-                color: Theme.of(context).hintColor,
+                color: fromMe ? 
+                Theme.of(context).textSelectionHandleColor /*Theme.of(context).scaffoldBackgroundColor*/ : 
+                Theme.of(context).scaffoldBackgroundColor,
                 fontSize: 16.0,
                 fontWeight: FontWeight.w600,
               ),

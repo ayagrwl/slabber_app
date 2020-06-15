@@ -1,61 +1,54 @@
 import 'package:flutter/material.dart';
+import 'package:gradient_app_bar/gradient_app_bar.dart';
+import 'package:provider/provider.dart';
 import 'package:trial_app/HomeScreen.dart';
-import 'ChatUsersScreen.dart';
+import 'package:trial_app/theme.dart';
+import 'package:trial_app/theme_model.dart';
 import 'Global.dart';
 import 'User.dart';
-//import 'dart:math';
 
 class LoginScreen extends StatefulWidget {
-  //
   LoginScreen() : super();
-
   static const String ROUTE_ID = 'login_screen';
-
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  //
+  
   TextEditingController _usernameController;
-  //TextEditingController _useridController;
-  //TextEditingController _useremailController;
 
   @override
-  void initState() {
+  void initState(){
     super.initState();
-    //_useridController = TextEditingController();
     _usernameController = TextEditingController();
-    //_useremailController = TextEditingController();
     G.initDummyUsers();
+  }
+
+  _createAppBar() {
+    if(Provider.of<ThemeModel>(context).currentTheme == darkTheme){
+      return AppBar(
+        title: Text("Slabber"),
+      );
+    } else {
+      return GradientAppBar(
+        backgroundColorStart: Theme.of(context).hoverColor,
+        backgroundColorEnd: Theme.of(context).cursorColor,
+        title: Text("Slabber"),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Slabber"),
-      ),
+      appBar: _createAppBar(),
       body: Container(
         alignment: Alignment.center,
         padding: EdgeInsets.all(30.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            /*TextField(
-              controller: _useridController,
-              textAlign: TextAlign.center,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(5.0),
-                  ),
-                ),
-                filled: true,
-                fillColor: Colors.white,
-                contentPadding: EdgeInsets.all(20.0),
-              ),
-            ),*/
             TextField(
               controller: _usernameController,
               textAlign: TextAlign.center,
@@ -67,24 +60,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 labelText: "username",
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: Theme.of(context).primaryColor,
                 contentPadding: EdgeInsets.all(20.0),
               ),
             ),
-            /*TextField(
-              controller: _useremailController,
-              textAlign: TextAlign.center,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(5.0),
-                  ),
-                ),
-                filled: true,
-                fillColor: Colors.white,
-                contentPadding: EdgeInsets.all(20.0),
-              ),
-            ),*/
             SizedBox(
               height: 20.0,
             ),

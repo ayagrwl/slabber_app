@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:gradient_app_bar/gradient_app_bar.dart';
+import 'package:provider/provider.dart';
 import 'package:trial_app/HomeScreen.dart';
 import 'package:trial_app/ProfileScreen.dart';
+import 'package:trial_app/theme.dart';
+import 'package:trial_app/theme_model.dart';
 import 'Global.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -9,30 +13,71 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).primaryColor,
-      appBar: AppBar(
-        elevation: 0.0,
+  
+  int radioValue;
+
+  _handleRadioValueChange(int value) {
+    setState(() {
+      radioValue = value;
+      switch(radioValue) {
+        case 0:
+          Provider.of<ThemeModel>(context).toggleTheme(0);
+          break;
+        case 1:
+          Provider.of<ThemeModel>(context).toggleTheme(1);
+          break;
+        case 2:
+          Provider.of<ThemeModel>(context).toggleTheme(2);
+          break;
+        default:
+          Provider.of<ThemeModel>(context).toggleTheme(0);
+      }
+    });
+  }
+
+  _createAppBar() {
+    if(Provider.of<ThemeModel>(context).currentTheme == darkTheme){
+      return AppBar(
+        elevation: 5.0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Theme.of(context).buttonColor,), 
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         title: Text(
           "Settings",
           style: TextStyle(
-            color: Colors.white,
+            color: Theme.of(context).splashColor,
             fontSize: 20.0,
-            fontFamily: "RobotoItalic",
             fontWeight: FontWeight.bold,
           ),
         ),
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).canvasColor,//Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30.0),
-            topRight: Radius.circular(30.0),
-          )
+      );
+    } else {
+        return GradientAppBar(
+          backgroundColorStart: Theme.of(context).hoverColor,
+              backgroundColorEnd: Theme.of(context).appBarTheme.color,
+        elevation: 5.0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Theme.of(context).buttonColor,), 
+          onPressed: () => Navigator.of(context).pop(),
         ),
+        title: Text(
+          "Settings",
+          style: TextStyle(
+            color: Theme.of(context).splashColor,
+            fontSize: 20.0,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: _createAppBar(),
+      body: Container(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -50,7 +95,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   CircleAvatar(
                     radius: 35.0,
                     backgroundImage: AssetImage('assets/images/contact.png'),
-                    backgroundColor: Colors.white,
+                    //backgroundColor: Colors.white,
                   ),
                   SizedBox(width: 20.0),
                   Column(
@@ -60,16 +105,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       Text(
                         G.loggedInUser.name,
                         style: TextStyle(
-                          color: Theme.of(context).accentColor,
+                          color: Theme.of(context).textSelectionHandleColor,
                           fontSize: 25.0,
                         ),
                       ),
-                      SizedBox(height: 3.0),
+                      SizedBox(height: 7.0),
                       Text(
                         G.loggedInUser.email,
                         style: TextStyle(
-                          color: Theme.of(context).hintColor,
-                          fontSize: 20.0,
+                          color: Theme.of(context).textSelectionColor,
+                          fontSize: 15.0,
                         )
                       )
                     ],
@@ -81,7 +126,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               padding: EdgeInsets.only(left: 20.0, right: 20.0 ,top: 20.0, bottom: 20.0),
               child: Divider(
                 height: 20.0,
-                color: Theme.of(context).accentColor,
+                color: Theme.of(context).dividerColor,
                 thickness: 2.0,
               ),
             ),
@@ -94,7 +139,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 Text(
                   "Theme",
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Theme.of(context).textSelectionHandleColor,
                     fontSize: 20.0,
                   )
                 )
@@ -104,11 +149,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Row(
               children: <Widget>[
                 SizedBox(width: 40.0),
-                Radio(value: 0, groupValue: null, onChanged: null),
+                Radio(value: 0, groupValue: radioValue, onChanged: _handleRadioValueChange,
+                activeColor: Theme.of(context).accentColor,focusColor: Theme.of(context).textSelectionColor,hoverColor: Theme.of(context).textSelectionColor,),
                 Text(
                   "Dark Theme",
                   style: TextStyle(
-                    color: Theme.of(context).hintColor,
+                    color: Theme.of(context).textSelectionColor,
                   ),
                 ),
               ],
@@ -116,11 +162,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Row(
               children: <Widget>[
                 SizedBox(width: 40.0),
-                Radio(value: 0, groupValue: null, onChanged: null),
+                Radio(value: 1, groupValue: radioValue, onChanged: _handleRadioValueChange,
+                activeColor: Theme.of(context).accentColor,focusColor: Theme.of(context).textSelectionColor,hoverColor: Theme.of(context).textSelectionColor,),
                 Text(
                   "Light Theme",
                   style: TextStyle(
-                    color: Theme.of(context).hintColor,
+                    color: Theme.of(context).textSelectionColor,
                   ),
                 ),
               ],
@@ -128,11 +175,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Row(
               children: <Widget>[
                 SizedBox(width: 40.0),
-                Radio(value: 0, groupValue: null, onChanged: null),
+                Radio(value: 2, groupValue: radioValue, onChanged: _handleRadioValueChange,
+                activeColor: Theme.of(context).accentColor,focusColor: Theme.of(context).textSelectionColor,hoverColor: Theme.of(context).textSelectionColor,),
                 Text(
                   "Warm Theme",
                   style: TextStyle(
-                    color: Theme.of(context).hintColor,
+                    color: Theme.of(context).textSelectionColor,
                   ),
                 ),
               ],
@@ -141,8 +189,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               padding: EdgeInsets.only(left: 40.0, right: 40.0 ,top: 20.0, bottom: 20.0),
               child: Divider(
                 height: 3.0,
-                color: Theme.of(context).hintColor,
-                thickness: 1.5,
+                color: Theme.of(context).dividerColor,
+                thickness: 0.5,
               ),
             ),
             GestureDetector(
@@ -160,6 +208,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   Text(
                     "Friends List",
                     style: TextStyle(
+                      color: Theme.of(context).textSelectionHandleColor,
                       fontSize: 20.0,
                     ),
                   ),
@@ -170,8 +219,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               padding: EdgeInsets.only(left: 40.0, right: 40.0 ,top: 20.0, bottom: 20.0),
               child: Divider(
                 height: 3.0,
-                color: Theme.of(context).hintColor,
-                thickness: 1.5,
+                color: Theme.of(context).dividerColor,
+                thickness: 0.5,
               ),
             ),
             GestureDetector(
@@ -190,6 +239,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     "Groups List",
                     style: TextStyle(
                       fontSize: 20.0,
+                      color: Theme.of(context).textSelectionHandleColor,
                     ),
                   ),
                 ],
@@ -199,8 +249,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               padding: EdgeInsets.only(left: 40.0, right: 40.0 ,top: 20.0, bottom: 20.0),
               child: Divider(
                 height: 3.0,
-                color: Theme.of(context).hintColor,
-                thickness: 1.5,
+                color: Theme.of(context).dividerColor,
+                thickness: 0.5,
               ),
             ),
             GestureDetector(
@@ -219,6 +269,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     "Logout",
                     style: TextStyle(
                       fontSize: 20.0,
+                      color: Theme.of(context).textSelectionHandleColor,
                     ),
                   ),
                 ],
@@ -230,3 +281,4 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 }
+
