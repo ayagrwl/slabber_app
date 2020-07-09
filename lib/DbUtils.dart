@@ -49,7 +49,7 @@ class DbUtils {
   // SQL code to create the database table
   Future _onCreateProfile(Database db, int version) async {
     await db.execute('''
-          CREATE Table if not exists contacts (
+          CREATE Table contacts (
             user_id varchar(30) NOT NULL,
             fullname varchar(30),
             email varchar(30)
@@ -62,6 +62,12 @@ class DbUtils {
             email varchar(30)            
           )
           '''); // Table for My Profile.
+    await db.execute('''
+        create table requests(
+          username varchar(31),
+          status integer,
+        )
+    '''); // Table for requests.
   }
 
   Future _onCreateMsgs(Database db, int version) async {
@@ -81,7 +87,6 @@ class DbUtils {
   Future<int> insertmsg(Map<String, dynamic> row) async {
     Database db = await instance.msgdb;
     String tbName = row["chatId"];
-    String otherUser = row["from"];
     await db.execute("""
       CREATE TABLE IF NOT EXISTS $tbName (
         row_id integer key auto_increment,
@@ -116,6 +121,13 @@ class DbUtils {
         conflictAlgorithm: ConflictAlgorithm.abort);
   }
 
+  Future<int> insertRequest(Map<String, dynamic> row) async {
+    Database db = await instance.profdb;
+    String tbName = "requests";
+    return await db.insert(tbName, row,
+        conflictAlgorithm: ConflictAlgorithm.abort);
+  }
+
   Future<Map<String, dynamic>> getProfile() async {
     Database db = await instance.profdb;
     List<Map<String, dynamic>> mees = await db.query("ME");
@@ -137,8 +149,13 @@ class DbUtils {
     return contacts;
   }
 
-  Future<List<Map<String, dynamic>>> getRecentChats() async {
+  Future<List<Map<String, dynamic>>> getRequests() async {
     Database db = await instance.profdb;
+    List<Map<String, dynamic>> reqs = await db.query("requests");
+    return reqs;
+  }
+
+  Future<List<Map<String, dynamic>>> getRecentChats() async {
     List<Map<String, dynamic>> chatlists = await getChatList();
     List<Map<String, dynamic>> recentList;
     chatlists.forEach((element) async {
@@ -150,7 +167,6 @@ class DbUtils {
 
   Future<Map<String, dynamic>> fetchLastMessage(String tbName) async {
     Database db = await instance.msgdb;
-    Map<String, dynamic> tile;
 
     String query = "select max(row_id) from $tbName limit 1";
     int lastMsg = (await db.rawQuery(query))[0]["row_id"];
@@ -171,10 +187,7 @@ class DbUtils {
     Database db = await instance.database;
     return await db.query(table);
   }
-<<<<<<< HEAD
-=======
 
->>>>>>> 3f0c0bbd671f5079dad1869b2af4e10c92adf291
   // All of the methods (insert, query, update, delete) can also be done using
   // raw SQL commands. This method uses a raw query to give the row count.
   Future<int> queryRowCount() async {
@@ -182,10 +195,7 @@ class DbUtils {
     return Sqflite.firstIntValue(
         await db.rawQuery('SELECT COUNT(*) FROM $table'));
   }
-<<<<<<< HEAD
-=======
 
->>>>>>> 3f0c0bbd671f5079dad1869b2af4e10c92adf291
   // We are assuming here that the id column in the map is set. The other
   // column values will be used to update the row.
   Future<int> update(Map<String, dynamic> row) async {
@@ -193,10 +203,7 @@ class DbUtils {
     int id = row[columnId];
     return await db.update(table, row, where: '$columnId = ?', whereArgs: [id]);
   }
-<<<<<<< HEAD
-=======
 
->>>>>>> 3f0c0bbd671f5079dad1869b2af4e10c92adf291
   // Deletes the row specified by the id. The number of affected rows is
   // returned. This should be 1 as long as the row exists.
   Future<int> delete(int id) async {
@@ -204,8 +211,4 @@ class DbUtils {
     return await db.delete(table, where: '$columnId = ?', whereArgs: [id]);
   }
 }
-<<<<<<< HEAD
 */
-=======
-*/
->>>>>>> 3f0c0bbd671f5079dad1869b2af4e10c92adf291
